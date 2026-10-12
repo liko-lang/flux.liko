@@ -45,7 +45,7 @@
         // latest image.
         //
         // Default: Never.
-        digestReflectionPolicy?: "Always" or "IfNotPresent" or "Never" or "Never"
+        digestReflectionPolicy?: "Always" | "IfNotPresent" | "Never" = "Never"
         // FilterTags enables filtering for only a subset of tags based on a set of
         // rules. If no rules are provided, all the tags from the repository will be
         // ordered and compared.
@@ -70,7 +70,7 @@
         // reflection policy is set to "Always".
         //
         // Defaults to 10m.
-        interval?: string
+        interval?: string =~ "^([0-9]+(\\.[0-9]+)?(ms|s|m|h))+$"
         // Policy gives the particulars of the policy to be followed in
         // selecting the most recent image
         policy: {
@@ -79,14 +79,14 @@
                 // Order specifies the sorting order of the tags. Given the letters of the
                 // alphabet as tags, ascending order would select Z, and descending order
                 // would select A.
-                order?: "asc" or "desc" or "asc"
+                order?: "asc" | "desc" = "asc"
             }
             // Numerical set of rules to use for numerical ordering of the tags.
             numerical?: {
                 // Order specifies the sorting order of the tags. Given the integer values
                 // from 0 to 9 as tags, ascending order would select 9, and descending order
                 // would select 0.
-                order?: "asc" or "desc" or "asc"
+                order?: "asc" | "desc" = "asc"
             }
             // SemVer gives a semantic version range to check against the tags
             // available.
@@ -110,13 +110,13 @@
             lastTransitionTime: string
             // message is a human readable message indicating details about the transition.
             // This may be an empty string.
-            message: string
+            message: string len <= 32768
             // observedGeneration represents the .metadata.generation that the condition was set based
             // upon.
             // For instance, if .metadata.generation is currently 12, but the
             // .status.conditions[x].observedGeneration is 9, the condition is out of date
             // with respect to the current state of the instance.
-            observedGeneration?: int
+            observedGeneration?: int >= 0
             // reason contains a programmatic identifier indicating the reason for the condition's last
             // transition.
             // Producers of specific condition types may define expected values and meanings for this
@@ -124,11 +124,11 @@
             // and whether the values are considered a guaranteed API.
             // The value should be a CamelCase string.
             // This field may not be empty.
-            reason: string
+            reason: string len >= 1 & len <= 1024 & =~ "^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$"
             // status of the condition, one of True, False, Unknown.
-            status: "True" or "False" or "Unknown"
+            status: "True" | "False" | "Unknown"
             // type of condition in CamelCase or in foo.example.com/CamelCase.
-            type: string
+            type: string len <= 316 & =~ "^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$"
         }]
         // LastHandledReconcileAt holds the value of the most recent
         // reconcile request value, so a change of the annotation value
@@ -233,10 +233,10 @@
         insecure?: bool
         // Interval is the length of time to wait between
         // scans of the image repository.
-        interval: string
+        interval: string =~ "^([0-9]+(\\.[0-9]+)?(ms|s|m|h))+$"
         // The provider used for authentication, can be 'aws', 'azure', 'gcp' or 'generic'.
         // When not specified, defaults to 'generic'.
-        provider?: "generic" or "aws" or "azure" or "gcp" or "generic"
+        provider?: "generic" | "aws" | "azure" | "gcp" = "generic"
         // ProxySecretRef specifies the Secret containing the proxy configuration
         // to use while communicating with the container registry.
         proxySecretRef?: {
@@ -253,13 +253,13 @@
         }
         // ServiceAccountName is the name of the Kubernetes ServiceAccount used to authenticate
         // the image pull if the service account has attached pull secrets.
-        serviceAccountName?: string
+        serviceAccountName?: string len <= 253
         // This flag tells the controller to suspend subsequent image scans.
         // It does not apply to already started scans. Defaults to false.
         suspend?: bool
         // Timeout for image scanning.
         // Defaults to 'Interval' duration.
-        timeout?: string
+        timeout?: string =~ "^([0-9]+(\\.[0-9]+)?(ms|s|m))+$"
     }
     // ImageRepositoryStatus defines the observed state of ImageRepository
     status?: {
@@ -275,13 +275,13 @@
             lastTransitionTime: string
             // message is a human readable message indicating details about the transition.
             // This may be an empty string.
-            message: string
+            message: string len <= 32768
             // observedGeneration represents the .metadata.generation that the condition was set based
             // upon.
             // For instance, if .metadata.generation is currently 12, but the
             // .status.conditions[x].observedGeneration is 9, the condition is out of date
             // with respect to the current state of the instance.
-            observedGeneration?: int
+            observedGeneration?: int >= 0
             // reason contains a programmatic identifier indicating the reason for the condition's last
             // transition.
             // Producers of specific condition types may define expected values and meanings for this
@@ -289,11 +289,11 @@
             // and whether the values are considered a guaranteed API.
             // The value should be a CamelCase string.
             // This field may not be empty.
-            reason: string
+            reason: string len >= 1 & len <= 1024 & =~ "^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$"
             // status of the condition, one of True, False, Unknown.
-            status: "True" or "False" or "Unknown"
+            status: "True" | "False" | "Unknown"
             // type of condition in CamelCase or in foo.example.com/CamelCase.
-            type: string
+            type: string len <= 316 & =~ "^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$"
         }]
         // LastHandledReconcileAt holds the value of the most recent
         // reconcile request value, so a change of the annotation value
@@ -427,7 +427,7 @@
                     }
                     // Type selects the signing-key format expected in the referenced
                     // Secret. When empty, the controller defaults to 'gpg'.
-                    type?: "gpg" or "ssh"
+                    type?: "gpg" | "ssh"
                 }
             }
             // Push specifies how and where to push commits made by the
@@ -448,12 +448,12 @@
                 // Deletion refspecs and refspecs prefixed with '+' are not supported.
                 // For more details about Git Refspecs, see:
                 // https://git-scm.com/book/en/v2/Git-Internals-The-Refspec
-                refspec?: string
+                refspec?: string =~ "^$|^[^+:]"
             }
         }
         // Interval gives an lower bound for how often the automation
         // run should be attempted.
-        interval: string
+        interval: string =~ "^([0-9]+(\\.[0-9]+)?(ms|s|m|h))+$"
         // PolicySelector allows to filter applied policies based on labels.
         // By default includes all policies in namespace.
         policySelector?: {
@@ -482,7 +482,7 @@
             // API version of the referent.
             apiVersion?: string
             // Kind of the referent.
-            kind?: "GitRepository" or "GitRepository"
+            kind?: "GitRepository" = "GitRepository"
             // Name of the referent.
             name: string
             // Namespace of the referent, defaults to the namespace of the Kubernetes resource object
@@ -501,7 +501,7 @@
             // of the GitRepositoryRef.
             path?: string
             // Strategy names the strategy to be used.
-            strategy?: "Setters" or "Setters"
+            strategy?: "Setters" = "Setters"
         }
     }
     // ImageUpdateAutomationStatus defines the observed state of ImageUpdateAutomation
@@ -514,13 +514,13 @@
             lastTransitionTime: string
             // message is a human readable message indicating details about the transition.
             // This may be an empty string.
-            message: string
+            message: string len <= 32768
             // observedGeneration represents the .metadata.generation that the condition was set based
             // upon.
             // For instance, if .metadata.generation is currently 12, but the
             // .status.conditions[x].observedGeneration is 9, the condition is out of date
             // with respect to the current state of the instance.
-            observedGeneration?: int
+            observedGeneration?: int >= 0
             // reason contains a programmatic identifier indicating the reason for the condition's last
             // transition.
             // Producers of specific condition types may define expected values and meanings for this
@@ -528,11 +528,11 @@
             // and whether the values are considered a guaranteed API.
             // The value should be a CamelCase string.
             // This field may not be empty.
-            reason: string
+            reason: string len >= 1 & len <= 1024 & =~ "^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$"
             // status of the condition, one of True, False, Unknown.
-            status: "True" or "False" or "Unknown"
+            status: "True" | "False" | "Unknown"
             // type of condition in CamelCase or in foo.example.com/CamelCase.
-            type: string
+            type: string len <= 316 & =~ "^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$"
         }]
         // LastAutomationRunTime records the last time the controller ran
         // this automation through to completion (even if no updates were

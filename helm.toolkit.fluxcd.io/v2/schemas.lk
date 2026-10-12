@@ -52,28 +52,28 @@
             // Spec holds the template for the v1.HelmChartSpec for this HelmRelease.
             spec: {
                 // The name or path the Helm chart is available at in the SourceRef.
-                chart: string
+                chart: string len >= 1 & len <= 2048
                 // IgnoreMissingValuesFiles controls whether to silently ignore missing values files
                 // rather than failing.
                 ignoreMissingValuesFiles?: bool
                 // Interval at which to check the v1.Source for updates. Defaults to
                 // 'HelmReleaseSpec.Interval'.
-                interval?: string
+                interval?: string =~ "^([0-9]+(\\.[0-9]+)?(ms|s|m|h))+$"
                 // Determines what enables the creation of a new artifact. Valid values are
                 // ('ChartVersion', 'Revision').
                 // See the documentation of the values for an explanation on their behavior.
                 // Defaults to ChartVersion when omitted.
-                reconcileStrategy?: "ChartVersion" or "Revision" or "ChartVersion"
+                reconcileStrategy?: "ChartVersion" | "Revision" = "ChartVersion"
                 // The name and namespace of the v1.Source the chart is available at.
                 sourceRef: {
                     // APIVersion of the referent.
                     apiVersion?: string
                     // Kind of the referent.
-                    kind: "HelmRepository" or "GitRepository" or "Bucket"
+                    kind: "HelmRepository" | "GitRepository" | "Bucket"
                     // Name of the referent.
-                    name: string
+                    name: string len >= 1 & len <= 253
                     // Namespace of the referent.
-                    namespace?: string
+                    namespace?: string len >= 1 & len <= 63
                 }
                 // Alternative list of values files to use as the chart values (values.yaml
                 // is not included by default), expected to be a relative path in the SourceRef.
@@ -88,7 +88,7 @@
                 // are not verified.
                 verify?: {
                     // Provider specifies the technology used to sign the OCI Helm chart.
-                    provider?: "cosign" or "notation" or "cosign"
+                    provider?: "cosign" | "notation" = "cosign"
                     // SecretRef specifies the Kubernetes Secret containing the
                     // trusted public keys.
                     secretRef?: {
@@ -98,7 +98,7 @@
                 }
                 // Version semver expression, ignored for charts from v1.GitRepository and
                 // v1beta2.Bucket sources. Defaults to latest when omitted.
-                version?: string or "*"
+                version?: string = "*"
             }
         }
         // ChartRef holds a reference to a source controller resource containing the
@@ -107,12 +107,12 @@
             // APIVersion of the referent.
             apiVersion?: string
             // Kind of the referent.
-            kind: "OCIRepository" or "HelmChart" or "ExternalArtifact"
+            kind: "OCIRepository" | "HelmChart" | "ExternalArtifact"
             // Name of the referent.
-            name: string
+            name: string len >= 1 & len <= 253
             // Namespace of the referent, defaults to the namespace of the Kubernetes
             // resource object that contains the reference.
-            namespace?: string
+            namespace?: string len >= 1 & len <= 63
         }
         // CommonMetadata specifies the common labels and annotations that are
         // applied to all resources. Any existing label or annotation will be
@@ -186,7 +186,7 @@
             // Mode defines how differences should be handled between the Helm manifest
             // and the manifest currently applied to the cluster.
             // If not explicitly set, it defaults to DiffModeDisabled.
-            mode?: "enabled" or "warn" or "disabled"
+            mode?: "enabled" | "warn" | "disabled"
         }
         // HealthCheckExprs is a list of healthcheck expressions for evaluating the
         // health of custom resources using Common Expression Language (CEL).
@@ -226,7 +226,7 @@
             // With this option users can opt in to CRD replace existing CRDs on Helm
             // install actions, which is not (yet) natively supported by Helm.
             // https://helm.sh/docs/chart_best_practices/custom_resource_definitions.
-            crds?: "Skip" or "Create" or "CreateReplace"
+            crds?: "Skip" | "Create" | "CreateReplace"
             // CreateNamespace tells the Helm install action to create the
             // HelmReleaseSpec.TargetNamespace if it does not exist yet.
             // On uninstall, the namespace will not be garbage collected.
@@ -279,19 +279,19 @@
             // DefaultToRetryOnFailure feature gate is enabled.
             strategy?: {
                 // Name of the install strategy.
-                name: "RemediateOnFailure" or "RetryOnFailure"
+                name: "RemediateOnFailure" | "RetryOnFailure"
                 // RetryInterval is the interval at which to retry a failed install.
                 // Can be used only when Name is set to RetryOnFailure.
                 // Defaults to '5m'.
-                retryInterval?: string
+                retryInterval?: string =~ "^([0-9]+(\\.[0-9]+)?(ms|s|m|h))+$"
             }
             // Timeout is the time to wait for any individual Kubernetes operation (like
             // Jobs for hooks) during the performance of a Helm install action. Defaults to
             // 'HelmReleaseSpec.Timeout'.
-            timeout?: string
+            timeout?: string =~ "^([0-9]+(\\.[0-9]+)?(ms|s|m|h))+$"
         }
         // Interval at which to reconcile the Helm release.
-        interval: string
+        interval: string =~ "^([0-9]+(\\.[0-9]+)?(ms|s|m|h))+$"
         // KubeConfig for reconciling the HelmRelease on a remote cluster.
         // When used in combination with HelmReleaseSpec.ServiceAccountName,
         // forces the controller to act on behalf of that Service Account at the
@@ -369,7 +369,7 @@
         // 'combined' (hooks and templates sent together, Helm 4 default), and 'separate'
         // (hooks and templates sent in separate streams, Helm 4.2 opt-in).
         // Defaults to 'combined', or 'nohooks' when the UseHelm3Defaults feature gate is enabled.
-        postRenderStrategy?: "nohooks" or "combined" or "separate"
+        postRenderStrategy?: "nohooks" | "combined" | "separate"
         // PostRenderers holds an array of Helm PostRenderers, which will be applied in order
         // of their definition.
         postRenderers?: [{
@@ -430,7 +430,7 @@
         }]
         // ReleaseName used for the Helm release. Defaults to a composition of
         // '[TargetNamespace-]Name'.
-        releaseName?: string
+        releaseName?: string len >= 1 & len <= 53
         // Rollback holds the configuration for Helm rollback actions for this HelmRelease.
         rollback?: {
             // CleanupOnFail allows deletion of new resources created during the Helm
@@ -463,24 +463,24 @@
             // Can be "enabled", "disabled", or "auto".
             // When "auto", server-side apply usage will be based on the release's previous usage.
             // Defaults to "auto".
-            serverSideApply?: "enabled" or "disabled" or "auto"
+            serverSideApply?: "enabled" | "disabled" | "auto"
             // Timeout is the time to wait for any individual Kubernetes operation (like
             // Jobs for hooks) during the performance of a Helm rollback action. Defaults to
             // 'HelmReleaseSpec.Timeout'.
-            timeout?: string
+            timeout?: string =~ "^([0-9]+(\\.[0-9]+)?(ms|s|m|h))+$"
         }
         // The name of the Kubernetes service account to impersonate
         // when reconciling this HelmRelease.
-        serviceAccountName?: string
+        serviceAccountName?: string len >= 1 & len <= 253
         // StorageNamespace used for the Helm storage.
         // Defaults to the namespace of the HelmRelease.
-        storageNamespace?: string
+        storageNamespace?: string len >= 1 & len <= 63
         // Suspend tells the controller to suspend reconciliation for this HelmRelease,
         // it does not apply to already started reconciliations. Defaults to false.
         suspend?: bool
         // TargetNamespace to target when performing operations for the HelmRelease.
         // Defaults to the namespace of the HelmRelease.
-        targetNamespace?: string
+        targetNamespace?: string len >= 1 & len <= 63
         // Test holds the configuration for Helm test actions for this HelmRelease.
         test?: {
             // Enable enables Helm test actions for this HelmRelease after an Helm install
@@ -491,7 +491,7 @@
                 // Exclude specifies whether the named test should be excluded.
                 exclude?: bool
                 // Name is the name of the test.
-                name: string
+                name: string len >= 1 & len <= 253
             }]
             // IgnoreFailures tells the controller to skip remediation when the Helm tests
             // are run but fail. Can be overwritten for tests run after install or upgrade
@@ -499,16 +499,16 @@
             ignoreFailures?: bool
             // Timeout is the time to wait for any individual Kubernetes operation during
             // the performance of a Helm test action. Defaults to 'HelmReleaseSpec.Timeout'.
-            timeout?: string
+            timeout?: string =~ "^([0-9]+(\\.[0-9]+)?(ms|s|m|h))+$"
         }
         // Timeout is the time to wait for any individual Kubernetes operation (like Jobs
         // for hooks) during the performance of a Helm action. Defaults to '5m0s'.
-        timeout?: string
+        timeout?: string =~ "^([0-9]+(\\.[0-9]+)?(ms|s|m|h))+$"
         // Uninstall holds the configuration for Helm uninstall actions for this HelmRelease.
         uninstall?: {
             // DeletionPropagation specifies the deletion propagation policy when
             // a Helm uninstall is performed.
-            deletionPropagation?: "background" or "foreground" or "orphan" or "background"
+            deletionPropagation?: "background" | "foreground" | "orphan" = "background"
             // DisableHooks prevents hooks from running during the Helm rollback action.
             disableHooks?: bool
             // DisableWait disables waiting for all the resources to be deleted after
@@ -520,7 +520,7 @@
             // Timeout is the time to wait for any individual Kubernetes operation (like
             // Jobs for hooks) during the performance of a Helm uninstall action. Defaults
             // to 'HelmReleaseSpec.Timeout'.
-            timeout?: string
+            timeout?: string =~ "^([0-9]+(\\.[0-9]+)?(ms|s|m|h))+$"
         }
         // Upgrade holds the configuration for Helm upgrade actions for this HelmRelease.
         upgrade?: {
@@ -530,7 +530,7 @@
             // Reinstall: Reinstall the Helm release, uninstalling the existing Helm release.
             //
             // InPlaceUpdate: Update the Helm release in place.
-            chartNameChangeStrategy?: "InPlaceUpdate" or "Reinstall"
+            chartNameChangeStrategy?: "InPlaceUpdate" | "Reinstall"
             // CleanupOnFail allows deletion of new resources created during the Helm
             // upgrade action when it fails.
             cleanupOnFail?: bool
@@ -549,7 +549,7 @@
             // By default, CRDs are not applied during Helm upgrade action. With this
             // option users can opt-in to CRD upgrade, which is not (yet) natively supported by Helm.
             // https://helm.sh/docs/chart_best_practices/custom_resource_definitions.
-            crds?: "Skip" or "Create" or "CreateReplace"
+            crds?: "Skip" | "Create" | "CreateReplace"
             // DisableHooks prevents hooks from running during the Helm upgrade action.
             disableHooks?: bool
             // DisableOpenAPIValidation prevents the Helm upgrade action from validating
@@ -591,28 +591,28 @@
                 // Defaults to '0', a negative integer equals to unlimited retries.
                 retries?: int
                 // Strategy to use for failure remediation. Defaults to 'rollback'.
-                strategy?: "rollback" or "uninstall"
+                strategy?: "rollback" | "uninstall"
             }
             // ServerSideApply enables server-side apply for resources during upgrade.
             // Can be "enabled", "disabled", or "auto".
             // When "auto", server-side apply usage will be based on the release's previous usage.
             // Defaults to "auto".
-            serverSideApply?: "enabled" or "disabled" or "auto"
+            serverSideApply?: "enabled" | "disabled" | "auto"
             // Strategy defines the upgrade strategy to use for this HelmRelease.
             // Defaults to 'RemediateOnFailure', or 'RetryOnFailure' when the
             // DefaultToRetryOnFailure feature gate is enabled.
             strategy?: {
                 // Name of the upgrade strategy.
-                name: "RemediateOnFailure" or "RetryOnFailure"
+                name: "RemediateOnFailure" | "RetryOnFailure"
                 // RetryInterval is the interval at which to retry a failed upgrade.
                 // Can be used only when Name is set to RetryOnFailure.
                 // Defaults to '5m'.
-                retryInterval?: string
+                retryInterval?: string =~ "^([0-9]+(\\.[0-9]+)?(ms|s|m|h))+$"
             }
             // Timeout is the time to wait for any individual Kubernetes operation (like
             // Jobs for hooks) during the performance of a Helm upgrade action. Defaults to
             // 'HelmReleaseSpec.Timeout'.
-            timeout?: string
+            timeout?: string =~ "^([0-9]+(\\.[0-9]+)?(ms|s|m|h))+$"
         }
         // Values holds the values for this Helm release.
         values?: any
@@ -620,7 +620,7 @@
         // and information about how they should be merged.
         valuesFrom?: [{
             // Kind of the values referent, valid values are ('Secret', 'ConfigMap').
-            kind: "Secret" or "ConfigMap"
+            kind: "Secret" | "ConfigMap"
             // Literal marks this ValuesReference as a literal value. When set in
             // combination with TargetPath, the referenced value is merged at the target
             // path without interpreting Helm's `--set` syntax (commas, brackets, dots,
@@ -632,7 +632,7 @@
             literal?: bool
             // Name of the values referent. Should reside in the same namespace as the
             // referring resource.
-            name: string
+            name: string len >= 1 & len <= 253
             // Optional marks this ValuesReference as optional. When set, a not found error
             // for the values reference is ignored, but any ValuesKey, TargetPath or
             // transient error will still result in a reconciliation failure.
@@ -640,10 +640,10 @@
             // TargetPath is the YAML dot notation path the value should be merged at. When
             // set, the ValuesKey is expected to be a single flat value. Defaults to 'None',
             // which results in the values getting merged at the root.
-            targetPath?: string
+            targetPath?: string len <= 250
             // ValuesKey is the data key where the values.yaml or a specific value can be
             // found at. Defaults to 'values.yaml'.
-            valuesKey?: string
+            valuesKey?: string len <= 253 & =~ "^[\\-._a-zA-Z0-9]+$"
         }]
         // WaitStrategy defines Helm's wait strategy for waiting for applied
         // resources to become ready.
@@ -654,7 +654,7 @@
             // Helm v3's waiting logic.
             // Defaults to 'poller', or to 'legacy' when UseHelm3Defaults feature
             // gate is enabled.
-            name: "poller" or "legacy"
+            name: "poller" | "legacy"
         }
     }
     // HelmReleaseStatus defines the observed state of a HelmRelease.
@@ -668,13 +668,13 @@
             lastTransitionTime: string
             // message is a human readable message indicating details about the transition.
             // This may be an empty string.
-            message: string
+            message: string len <= 32768
             // observedGeneration represents the .metadata.generation that the condition was set based
             // upon.
             // For instance, if .metadata.generation is currently 12, but the
             // .status.conditions[x].observedGeneration is 9, the condition is out of date
             // with respect to the current state of the instance.
-            observedGeneration?: int
+            observedGeneration?: int >= 0
             // reason contains a programmatic identifier indicating the reason for the condition's last
             // transition.
             // Producers of specific condition types may define expected values and meanings for this
@@ -682,11 +682,11 @@
             // and whether the values are considered a guaranteed API.
             // The value should be a CamelCase string.
             // This field may not be empty.
-            reason: string
+            reason: string len >= 1 & len <= 1024 & =~ "^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$"
             // status of the condition, one of True, False, Unknown.
-            status: "True" or "False" or "Unknown"
+            status: "True" | "False" | "Unknown"
             // type of condition in CamelCase or in foo.example.com/CamelCase.
-            type: string
+            type: string len <= 316 & =~ "^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$"
         }]
         // Failures is the reconciliation failure count against the latest desired
         // state. It is reset after a successful reconciliation.
@@ -761,7 +761,7 @@
         // LastAttemptedReleaseAction is the last release action performed for this
         // HelmRelease. It is used to determine the active retry or remediation
         // strategy.
-        lastAttemptedReleaseAction?: "install" or "upgrade"
+        lastAttemptedReleaseAction?: "install" | "upgrade"
         // LastAttemptedReleaseActionDuration is the duration of the last
         // release action performed for this HelmRelease.
         lastAttemptedReleaseActionDuration?: string
@@ -802,7 +802,7 @@
         observedPostRenderersDigest?: string
         // StorageNamespace is the namespace of the Helm release storage for the
         // current release.
-        storageNamespace?: string
+        storageNamespace?: string len >= 1 & len <= 63
         // UpgradeFailures is the upgrade failure count against the latest desired
         // state. It is reset after a successful reconciliation.
         upgradeFailures?: int

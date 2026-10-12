@@ -65,13 +65,13 @@
         // Interval at which the Bucket Endpoint is checked for updates.
         // This interval is approximate and may be subject to jitter to ensure
         // efficient use of resources.
-        interval: string
+        interval: string =~ "^([0-9]+(\\.[0-9]+)?(ms|s|m|h))+$"
         // Prefix to use for server-side filtering of files in the Bucket.
         prefix?: string
         // Provider of the object storage bucket.
         // Defaults to 'generic', which expects an S3 (API) compatible object
         // storage.
-        provider?: "generic" or "aws" or "gcp" or "azure" or "generic"
+        provider?: "generic" | "aws" | "gcp" | "azure" = "generic"
         // ProxySecretRef specifies the Secret containing the proxy configuration
         // to use while communicating with the Bucket server.
         proxySecretRef?: {
@@ -117,9 +117,9 @@
             }
             // Endpoint is the HTTP/S endpoint of the Security Token Service from
             // where temporary credentials will be fetched.
-            endpoint: string
+            endpoint: string =~ "^(http|https)://.*$"
             // Provider of the Security Token Service.
-            provider: "aws" or "ldap"
+            provider: "aws" | "ldap"
             // SecretRef specifies the Secret containing authentication credentials
             // for the STS endpoint. This Secret must contain the fields `username`
             // and `password` and is supported only for the `ldap` provider.
@@ -132,7 +132,7 @@
         // Bucket.
         suspend?: bool
         // Timeout for fetch operations, defaults to 60s.
-        timeout?: string or "60s"
+        timeout?: string =~ "^([0-9]+(\\.[0-9]+)?(ms|s|m))+$" = "60s"
     }
     // BucketStatus records the observed state of a Bucket.
     status?: {
@@ -168,13 +168,13 @@
             lastTransitionTime: string
             // message is a human readable message indicating details about the transition.
             // This may be an empty string.
-            message: string
+            message: string len <= 32768
             // observedGeneration represents the .metadata.generation that the condition was set based
             // upon.
             // For instance, if .metadata.generation is currently 12, but the
             // .status.conditions[x].observedGeneration is 9, the condition is out of date
             // with respect to the current state of the instance.
-            observedGeneration?: int
+            observedGeneration?: int >= 0
             // reason contains a programmatic identifier indicating the reason for the condition's last
             // transition.
             // Producers of specific condition types may define expected values and meanings for this
@@ -182,11 +182,11 @@
             // and whether the values are considered a guaranteed API.
             // The value should be a CamelCase string.
             // This field may not be empty.
-            reason: string
+            reason: string len >= 1 & len <= 1024 & =~ "^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$"
             // status of the condition, one of True, False, Unknown.
-            status: "True" or "False" or "Unknown"
+            status: "True" | "False" | "Unknown"
             // type of condition in CamelCase or in foo.example.com/CamelCase.
-            type: string
+            type: string len <= 316 & =~ "^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$"
         }]
         // LastHandledReconcileAt holds the value of the most recent
         // reconcile request value, so a change of the annotation value
@@ -284,13 +284,13 @@
             lastTransitionTime: string
             // message is a human readable message indicating details about the transition.
             // This may be an empty string.
-            message: string
+            message: string len <= 32768
             // observedGeneration represents the .metadata.generation that the condition was set based
             // upon.
             // For instance, if .metadata.generation is currently 12, but the
             // .status.conditions[x].observedGeneration is 9, the condition is out of date
             // with respect to the current state of the instance.
-            observedGeneration?: int
+            observedGeneration?: int >= 0
             // reason contains a programmatic identifier indicating the reason for the condition's last
             // transition.
             // Producers of specific condition types may define expected values and meanings for this
@@ -298,11 +298,11 @@
             // and whether the values are considered a guaranteed API.
             // The value should be a CamelCase string.
             // This field may not be empty.
-            reason: string
+            reason: string len >= 1 & len <= 1024 & =~ "^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$"
             // status of the condition, one of True, False, Unknown.
-            status: "True" or "False" or "Unknown"
+            status: "True" | "False" | "Unknown"
             // type of condition in CamelCase or in foo.example.com/CamelCase.
-            type: string
+            type: string len <= 316 & =~ "^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$"
         }]
     }
 }
@@ -363,10 +363,10 @@
         // Interval at which the GitRepository URL is checked for updates.
         // This interval is approximate and may be subject to jitter to ensure
         // efficient use of resources.
-        interval: string
+        interval: string =~ "^([0-9]+(\\.[0-9]+)?(ms|s|m|h))+$"
         // Provider used for authentication, can be 'aws', 'azure', 'github', 'generic'.
         // When not specified, defaults to 'generic'.
-        provider?: "generic" or "aws" or "azure" or "github"
+        provider?: "generic" | "aws" | "azure" | "github"
         // ProxySecretRef specifies the Secret containing the proxy configuration
         // to use while communicating with the Git server.
         proxySecretRef?: {
@@ -420,9 +420,9 @@
         // GitRepository.
         suspend?: bool
         // Timeout for Git operations like cloning, defaults to 60s.
-        timeout?: string or "60s"
+        timeout?: string =~ "^([0-9]+(\\.[0-9]+)?(ms|s|m))+$" = "60s"
         // URL specifies the Git repository URL, it can be an HTTP/S or SSH address.
-        url: string
+        url: string =~ "^(http|https|ssh)://.*$"
         // Verification specifies the configuration to verify the Git commit
         // signature(s).
         verify?: {
@@ -431,7 +431,7 @@
             // The variants "head" and "HEAD" both imply the same thing, i.e. verify
             // the commit that the HEAD of the Git repository points to. The variant
             // "head" solely exists to ensure backwards compatibility.
-            mode?: "head" or "HEAD" or "Tag" or "TagAndHEAD" or "HEAD"
+            mode?: "head" | "HEAD" | "Tag" | "TagAndHEAD" = "HEAD"
             // SecretRef specifies the Secret containing the public keys of trusted Git
             // authors. PGP public keys must be stored under keys with the .asc suffix,
             // and SSH public keys must be stored under keys with the .sshpub suffix.
@@ -475,13 +475,13 @@
             lastTransitionTime: string
             // message is a human readable message indicating details about the transition.
             // This may be an empty string.
-            message: string
+            message: string len <= 32768
             // observedGeneration represents the .metadata.generation that the condition was set based
             // upon.
             // For instance, if .metadata.generation is currently 12, but the
             // .status.conditions[x].observedGeneration is 9, the condition is out of date
             // with respect to the current state of the instance.
-            observedGeneration?: int
+            observedGeneration?: int >= 0
             // reason contains a programmatic identifier indicating the reason for the condition's last
             // transition.
             // Producers of specific condition types may define expected values and meanings for this
@@ -489,11 +489,11 @@
             // and whether the values are considered a guaranteed API.
             // The value should be a CamelCase string.
             // This field may not be empty.
-            reason: string
+            reason: string len >= 1 & len <= 1024 & =~ "^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$"
             // status of the condition, one of True, False, Unknown.
-            status: "True" or "False" or "Unknown"
+            status: "True" | "False" | "Unknown"
             // type of condition in CamelCase or in foo.example.com/CamelCase.
-            type: string
+            type: string len <= 316 & =~ "^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$"
         }]
         // IncludedArtifacts contains a list of the last successfully included
         // Artifacts as instructed by GitRepositorySpec.Include.
@@ -598,19 +598,19 @@
         // Interval at which the HelmChart SourceRef is checked for updates.
         // This interval is approximate and may be subject to jitter to ensure
         // efficient use of resources.
-        interval: string
+        interval: string =~ "^([0-9]+(\\.[0-9]+)?(ms|s|m|h))+$"
         // ReconcileStrategy determines what enables the creation of a new artifact.
         // Valid values are ('ChartVersion', 'Revision').
         // See the documentation of the values for an explanation on their behavior.
         // Defaults to ChartVersion when omitted.
-        reconcileStrategy?: "ChartVersion" or "Revision" or "ChartVersion"
+        reconcileStrategy?: "ChartVersion" | "Revision" = "ChartVersion"
         // SourceRef is the reference to the Source the chart is available at.
         sourceRef: {
             // APIVersion of the referent.
             apiVersion?: string
             // Kind of the referent, valid values are ('HelmRepository', 'GitRepository',
             // 'Bucket').
-            kind: "HelmRepository" or "GitRepository" or "Bucket"
+            kind: "HelmRepository" | "GitRepository" | "Bucket"
             // Name of the referent.
             name: string
         }
@@ -644,7 +644,7 @@
                 subject: string
             }]
             // Provider specifies the technology used to sign the OCI Artifact.
-            provider?: "cosign" or "notation" or "cosign"
+            provider?: "cosign" | "notation" = "cosign"
             // SecretRef specifies the Kubernetes Secret containing the
             // trusted public keys.
             secretRef?: {
@@ -654,7 +654,7 @@
         }
         // Version is the chart version semver expression, ignored for charts from
         // GitRepository and Bucket sources. Defaults to latest when omitted.
-        version?: string or "*"
+        version?: string = "*"
     }
     // HelmChartStatus records the observed state of the HelmChart.
     status?: {
@@ -690,13 +690,13 @@
             lastTransitionTime: string
             // message is a human readable message indicating details about the transition.
             // This may be an empty string.
-            message: string
+            message: string len <= 32768
             // observedGeneration represents the .metadata.generation that the condition was set based
             // upon.
             // For instance, if .metadata.generation is currently 12, but the
             // .status.conditions[x].observedGeneration is 9, the condition is out of date
             // with respect to the current state of the instance.
-            observedGeneration?: int
+            observedGeneration?: int >= 0
             // reason contains a programmatic identifier indicating the reason for the condition's last
             // transition.
             // Producers of specific condition types may define expected values and meanings for this
@@ -704,11 +704,11 @@
             // and whether the values are considered a guaranteed API.
             // The value should be a CamelCase string.
             // This field may not be empty.
-            reason: string
+            reason: string len >= 1 & len <= 1024 & =~ "^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$"
             // status of the condition, one of True, False, Unknown.
-            status: "True" or "False" or "Unknown"
+            status: "True" | "False" | "Unknown"
             // type of condition in CamelCase or in foo.example.com/CamelCase.
-            type: string
+            type: string len <= 316 & =~ "^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$"
         }]
         // LastHandledReconcileAt holds the value of the most recent
         // reconcile request value, so a change of the annotation value
@@ -806,7 +806,7 @@
         // Interval at which the HelmRepository URL is checked for updates.
         // This interval is approximate and may be subject to jitter to ensure
         // efficient use of resources.
-        interval?: string
+        interval?: string =~ "^([0-9]+(\\.[0-9]+)?(ms|s|m|h))+$"
         // PassCredentials allows the credentials from the SecretRef to be passed
         // on to a host that does not match the host as defined in URL.
         // This may be required if the host of the advertised chart URLs in the
@@ -817,7 +817,7 @@
         // Provider used for authentication, can be 'aws', 'azure', 'gcp' or 'generic'.
         // This field is optional, and only taken into account if the .spec.type field is set to 'oci'.
         // When not specified, defaults to 'generic'.
-        provider?: "generic" or "aws" or "azure" or "gcp" or "generic"
+        provider?: "generic" | "aws" | "azure" | "gcp" = "generic"
         // SecretRef specifies the Secret containing authentication credentials
         // for the HelmRepository.
         // For HTTP/S basic auth the secret must contain 'username' and 'password'
@@ -835,13 +835,13 @@
         // and for remote OCI Repository operations like pulling for an OCI helm
         // chart by the associated HelmChart.
         // Its default value is 60s.
-        timeout?: string
+        timeout?: string =~ "^([0-9]+(\\.[0-9]+)?(ms|s|m))+$"
         // Type of the HelmRepository.
         // When this field is set to  "oci", the URL field value must be prefixed with "oci://".
-        type?: "default" or "oci"
+        type?: "default" | "oci"
         // URL of the Helm repository, a valid URL contains at least a protocol and
         // host.
-        url: string
+        url: string =~ "^(http|https|oci)://.*$"
     }
     // HelmRepositoryStatus records the observed state of the HelmRepository.
     status?: {
@@ -877,13 +877,13 @@
             lastTransitionTime: string
             // message is a human readable message indicating details about the transition.
             // This may be an empty string.
-            message: string
+            message: string len <= 32768
             // observedGeneration represents the .metadata.generation that the condition was set based
             // upon.
             // For instance, if .metadata.generation is currently 12, but the
             // .status.conditions[x].observedGeneration is 9, the condition is out of date
             // with respect to the current state of the instance.
-            observedGeneration?: int
+            observedGeneration?: int >= 0
             // reason contains a programmatic identifier indicating the reason for the condition's last
             // transition.
             // Producers of specific condition types may define expected values and meanings for this
@@ -891,11 +891,11 @@
             // and whether the values are considered a guaranteed API.
             // The value should be a CamelCase string.
             // This field may not be empty.
-            reason: string
+            reason: string len >= 1 & len <= 1024 & =~ "^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$"
             // status of the condition, one of True, False, Unknown.
-            status: "True" or "False" or "Unknown"
+            status: "True" | "False" | "Unknown"
             // type of condition in CamelCase or in foo.example.com/CamelCase.
-            type: string
+            type: string len <= 316 & =~ "^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$"
         }]
         // LastHandledReconcileAt holds the value of the most recent
         // reconcile request value, so a change of the annotation value
@@ -968,7 +968,7 @@
         // Interval at which the OCIRepository URL is checked for updates.
         // This interval is approximate and may be subject to jitter to ensure
         // efficient use of resources.
-        interval: string
+        interval: string =~ "^([0-9]+(\\.[0-9]+)?(ms|s|m|h))+$"
         // LayerSelector specifies which layer should be extracted from the OCI artifact.
         // When not specified, the first layer found in the artifact is selected.
         layerSelector?: {
@@ -980,11 +980,11 @@
             // By default, the layer compressed content is extracted to storage.
             // When the operation is set to 'copy', the layer compressed content
             // is persisted to storage as it is.
-            operation?: "extract" or "copy"
+            operation?: "extract" | "copy"
         }
         // The provider used for authentication, can be 'aws', 'azure', 'gcp' or 'generic'.
         // When not specified, defaults to 'generic'.
-        provider?: "generic" or "aws" or "azure" or "gcp" or "generic"
+        provider?: "generic" | "aws" | "azure" | "gcp" = "generic"
         // ProxySecretRef specifies the Secret containing the proxy configuration
         // to use while communicating with the container registry.
         proxySecretRef?: {
@@ -1019,10 +1019,10 @@
         // This flag tells the controller to suspend the reconciliation of this source.
         suspend?: bool
         // The timeout for remote OCI Repository operations like pulling, defaults to 60s.
-        timeout?: string or "60s"
+        timeout?: string =~ "^([0-9]+(\\.[0-9]+)?(ms|s|m))+$" = "60s"
         // URL is a reference to an OCI artifact repository hosted
         // on a remote container registry.
-        url: string
+        url: string =~ "^oci://.*$"
         // Verify contains the secret name containing the trusted public keys
         // used to verify the signature and specifies which provider to use to check
         // whether OCI image is authentic.
@@ -1042,7 +1042,7 @@
                 subject: string
             }]
             // Provider specifies the technology used to sign the OCI Artifact.
-            provider?: "cosign" or "notation" or "cosign"
+            provider?: "cosign" | "notation" = "cosign"
             // SecretRef specifies the Kubernetes Secret containing the
             // trusted public keys.
             secretRef?: {
@@ -1093,13 +1093,13 @@
             lastTransitionTime: string
             // message is a human readable message indicating details about the transition.
             // This may be an empty string.
-            message: string
+            message: string len <= 32768
             // observedGeneration represents the .metadata.generation that the condition was set based
             // upon.
             // For instance, if .metadata.generation is currently 12, but the
             // .status.conditions[x].observedGeneration is 9, the condition is out of date
             // with respect to the current state of the instance.
-            observedGeneration?: int
+            observedGeneration?: int >= 0
             // reason contains a programmatic identifier indicating the reason for the condition's last
             // transition.
             // Producers of specific condition types may define expected values and meanings for this
@@ -1107,11 +1107,11 @@
             // and whether the values are considered a guaranteed API.
             // The value should be a CamelCase string.
             // This field may not be empty.
-            reason: string
+            reason: string len >= 1 & len <= 1024 & =~ "^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$"
             // status of the condition, one of True, False, Unknown.
-            status: "True" or "False" or "Unknown"
+            status: "True" | "False" | "Unknown"
             // type of condition in CamelCase or in foo.example.com/CamelCase.
-            type: string
+            type: string len <= 316 & =~ "^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$"
         }]
         // LastHandledReconcileAt holds the value of the most recent
         // reconcile request value, so a change of the annotation value
@@ -1133,7 +1133,7 @@
             // By default, the layer compressed content is extracted to storage.
             // When the operation is set to 'copy', the layer compressed content
             // is persisted to storage as it is.
-            operation?: "extract" or "copy"
+            operation?: "extract" | "copy"
         }
         // URL is the download link for the artifact output of the last OCI Repository sync.
         url?: string

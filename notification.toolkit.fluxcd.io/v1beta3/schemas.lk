@@ -41,14 +41,14 @@
         eventMetadata?: any
         // EventSeverity specifies how to filter events based on severity.
         // If set to 'info' no events will be filtered.
-        eventSeverity?: "info" or "error" or "info"
+        eventSeverity?: "info" | "error" = "info"
         // EventSources specifies how to filter events based
         // on the involved object kind, name and namespace.
         eventSources: [{
             // API version of the referent
             apiVersion?: string
             // Kind of the referent
-            kind: "Bucket" or "GitRepository" or "Kustomization" or "HelmRelease" or "HelmChart" or "HelmRepository" or "ImageRepository" or "ImagePolicy" or "ImageUpdateAutomation" or "OCIRepository" or "ArtifactGenerator" or "ExternalArtifact"
+            kind: "Bucket" | "GitRepository" | "Kustomization" | "HelmRelease" | "HelmChart" | "HelmRepository" | "ImageRepository" | "ImagePolicy" | "ImageUpdateAutomation" | "OCIRepository" | "ArtifactGenerator" | "ExternalArtifact"
             // MatchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
             // map is equivalent to an element of matchExpressions, whose key field is "key", the
             // operator is "In", and the values array contains only "value". The requirements are
@@ -57,9 +57,9 @@
             matchLabels?: any
             // Name of the referent
             // If multiple resources are targeted `*` may be set.
-            name: string
+            name: string len >= 1 & len <= 253
             // Namespace of the referent
-            namespace?: string
+            namespace?: string len >= 1 & len <= 253
         }]
         // ExclusionList specifies a list of Golang regular expressions
         // to be used for excluding messages.
@@ -74,7 +74,7 @@
         }
         // Summary holds a short description of the impact and affected cluster.
         // Deprecated: Use EventMetadata instead.
-        summary?: string
+        summary?: string len <= 255
         // Suspend tells the controller to suspend subsequent
         // events handling for this Alert.
         suspend?: bool
@@ -117,7 +117,7 @@
         // What kind of endpoint depends on the specific Provider type being used.
         // For the generic Provider, for example, this is an HTTP/S address.
         // For other Provider types this could be a project ID or a namespace.
-        address?: string
+        address?: string len <= 2048
         // CertSecretRef specifies the Secret containing TLS certificates
         // for secure communication.
         //
@@ -133,7 +133,7 @@
             name: string
         }
         // Channel specifies the destination channel where events should be posted.
-        channel?: string
+        channel?: string len <= 2048
         // CommitStatusExpr is a CEL expression that evaluates to a string value
         // that can be used to generate a custom commit status message for use
         // with eligible Provider types (github, gitlab, gitea, bitbucketserver,
@@ -142,10 +142,10 @@
         commitStatusExpr?: string
         // Interval at which to reconcile the Provider with its Secret references.
         // Deprecated and not used in v1beta3.
-        interval?: string
+        interval?: string =~ "^([0-9]+(\\.[0-9]+)?(ms|s|m|h))+$"
         // Proxy the HTTP/S address of the proxy server.
         // Deprecated: Use ProxySecretRef instead. Will be removed in v1.
-        proxy?: string
+        proxy?: string len <= 2048 & =~ "^(http|https)://.*$"
         // ProxySecretRef specifies the Secret containing the proxy configuration
         // for this Provider. The Secret should contain an 'address' key with the
         // HTTP/S address of the proxy server. Optional 'username' and 'password'
@@ -180,10 +180,10 @@
         // events handling for this Provider.
         suspend?: bool
         // Timeout for sending alerts to the Provider.
-        timeout?: string
+        timeout?: string =~ "^([0-9]+(\\.[0-9]+)?(ms|s|m))+$"
         // Type specifies which Provider implementation to use.
-        type: "slack" or "discord" or "msteams" or "rocket" or "generic" or "generic-hmac" or "github" or "gitlab" or "gitea" or "giteapullrequestcomment" or "bitbucketserver" or "bitbucket" or "azuredevops" or "googlechat" or "googlepubsub" or "webex" or "sentry" or "azureeventhub" or "telegram" or "lark" or "matrix" or "opsgenie" or "alertmanager" or "grafana" or "githubdispatch" or "githubpullrequestcomment" or "gitlabmergerequestcomment" or "pagerduty" or "datadog" or "nats" or "zulip" or "otel"
+        type: "slack" | "discord" | "msteams" | "rocket" | "generic" | "generic-hmac" | "github" | "gitlab" | "gitea" | "giteapullrequestcomment" | "bitbucketserver" | "bitbucket" | "azuredevops" | "googlechat" | "googlepubsub" | "webex" | "sentry" | "azureeventhub" | "telegram" | "lark" | "matrix" | "opsgenie" | "alertmanager" | "grafana" | "githubdispatch" | "githubpullrequestcomment" | "gitlabmergerequestcomment" | "pagerduty" | "datadog" | "nats" | "zulip" | "otel"
         // Username specifies the name under which events are posted.
-        username?: string
+        username?: string len <= 2048
     }
 }

@@ -37,7 +37,7 @@
         // e.g. 'push' for GitHub or 'Push Hook' for GitLab.
         events?: [string]
         // Interval at which to reconcile the Receiver with its Secret references.
-        interval?: string or "10m"
+        interval?: string =~ "^([0-9]+(\\.[0-9]+)?(ms|s|m|h))+$" = "10m"
         // OIDCProviders specifies the OIDC providers used to authenticate incoming
         // requests when Type is 'generic-oidc'. The provider whose IssuerURL matches
         // the token's 'iss' claim is used to verify the token signature, expiration
@@ -49,7 +49,7 @@
             audience?: string
             // IssuerURL is the OIDC issuer URL used for provider discovery. It must
             // match the 'iss' claim of tokens issued by this provider.
-            issuerURL: string
+            issuerURL: string =~ "^https?://"
             // Validations is the list of CEL boolean expressions evaluated against the
             // token claims and the variables. The request is accepted only if all of
             // them evaluate to true; the message of each failing expression is returned
@@ -103,7 +103,7 @@
             // return a boolean.
             filter?: string
             // Kind of the referent
-            kind: "Bucket" or "GitRepository" or "Kustomization" or "HelmRelease" or "HelmChart" or "HelmRepository" or "ImageRepository" or "ImagePolicy" or "ImageUpdateAutomation" or "OCIRepository" or "ArtifactGenerator" or "ExternalArtifact"
+            kind: "Bucket" | "GitRepository" | "Kustomization" | "HelmRelease" | "HelmChart" | "HelmRepository" | "ImageRepository" | "ImagePolicy" | "ImageUpdateAutomation" | "OCIRepository" | "ArtifactGenerator" | "ExternalArtifact"
             // MatchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels
             // map is equivalent to an element of matchExpressions, whose key field is "key", the
             // operator is "In", and the values array contains only "value". The requirements are
@@ -112,9 +112,9 @@
             matchLabels?: any
             // Name of the referent
             // If multiple resources are targeted `*` may be set.
-            name: string
+            name: string len >= 1 & len <= 253
             // Namespace of the referent
-            namespace?: string
+            namespace?: string len >= 1 & len <= 253
         }]
         // SecretRef specifies the Secret containing the token used
         // to validate the payload authenticity. The Secret must contain a 'token'
@@ -133,7 +133,7 @@
         suspend?: bool
         // Type of webhook sender, used to determine
         // the validation procedure and payload deserialization.
-        type: "generic" or "generic-hmac" or "generic-oidc" or "github" or "gitlab" or "bitbucket" or "harbor" or "dockerhub" or "quay" or "gcr" or "nexus" or "acr" or "cdevents"
+        type: "generic" | "generic-hmac" | "generic-oidc" | "github" | "gitlab" | "bitbucket" | "harbor" | "dockerhub" | "quay" | "gcr" | "nexus" | "acr" | "cdevents"
     }
     // ReceiverStatus defines the observed state of the Receiver.
     status?: {
@@ -146,13 +146,13 @@
             lastTransitionTime: string
             // message is a human readable message indicating details about the transition.
             // This may be an empty string.
-            message: string
+            message: string len <= 32768
             // observedGeneration represents the .metadata.generation that the condition was set based
             // upon.
             // For instance, if .metadata.generation is currently 12, but the
             // .status.conditions[x].observedGeneration is 9, the condition is out of date
             // with respect to the current state of the instance.
-            observedGeneration?: int
+            observedGeneration?: int >= 0
             // reason contains a programmatic identifier indicating the reason for the condition's last
             // transition.
             // Producers of specific condition types may define expected values and meanings for this
@@ -160,11 +160,11 @@
             // and whether the values are considered a guaranteed API.
             // The value should be a CamelCase string.
             // This field may not be empty.
-            reason: string
+            reason: string len >= 1 & len <= 1024 & =~ "^[A-Za-z]([A-Za-z0-9_,:]*[A-Za-z0-9_])?$"
             // status of the condition, one of True, False, Unknown.
-            status: "True" or "False" or "Unknown"
+            status: "True" | "False" | "Unknown"
             // type of condition in CamelCase or in foo.example.com/CamelCase.
-            type: string
+            type: string len <= 316 & =~ "^([a-z0-9]([-a-z0-9]*[a-z0-9])?(\\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*/)?(([A-Za-z0-9][-A-Za-z0-9_.]*)?[A-Za-z0-9])$"
         }]
         // LastHandledReconcileAt holds the value of the most recent
         // reconcile request value, so a change of the annotation value
